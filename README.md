@@ -107,18 +107,23 @@ _If you want to pass a dictionary file use -d option and use exit command to exi
 **Example Usages:**
 
 _With Single input file and dict_
+
 1. <PATH>/NumberToWords  java -jar target/NumberToWords-1.0-SNAPSHOT.jar <ABSOLUTE_PATH>/src/main/resources/input.txt -d<ABSOLUTE_PATH>/src/main/resources/test-dictionary.txt
 
 _with no input file and no dict_
+
 2. <PATH>/NumberToWords  java -jar target/NumberToWords-1.0-SNAPSHOT.jar
 
 _with no input file and Only dict_
+
 3. <PATH>/NumberToWords  java -jar target/NumberToWords-1.0-SNAPSHOT.jar -d<ABSOLUTE_PATH>/src/main/resources/test-dictionary.txt
 
 _with multiple input files and dict_
+
 4. <PATH>/NumberToWords  java -jar target/NumberToWords-1.0-SNAPSHOT.jar <ABSOLUTE_PATH>/src/main/resources/input.txt <ABSOLUTE_PATH>/src/main/resources/input1.txt -d<ABSOLUTE_PATH>/src/main/resources/test-dictionary.txt
 
 _with multiple input file and no dict_
+
 5. <PATH>/NumberToWords  java -jar target/NumberToWords-1.0-SNAPSHOT.jar <ABSOLUTE_PATH>/src/main/resources/input.txt <ABSOLUTE_PATH>/src/main/resources/input1.txt
 
 
