@@ -1,3 +1,7 @@
+**Build Status**
+[![Build Status](https://travis-ci.org/byrash/NumberToWords.svg?branch=master)](https://travis-ci.org/byrash/NumberToWords)
+
+
 **1-800-CODING-CHALLENGE or Number to Words**
 
 Many companies like to list their phone numbers using the letters printed on most telephones. This makes the number easier to remember for customers. 
