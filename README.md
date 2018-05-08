@@ -101,7 +101,7 @@ java -jar target/NumberToWords-1.0-SNAPSHOT.jar
 
 or
 
-double click rpn-calculator-1.0-SNAPSHOT.jar file produced in target folder 
+double click NumberToWords-1.0-SNAPSHOT.jar file produced in target folder 
 ( Assuming you jar launcher is set to run jar files )
 
 ```
