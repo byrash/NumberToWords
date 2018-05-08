@@ -3,6 +3,7 @@ package com.shivaji.input.processor;
 import java.util.Collection;
 
 /** @author Shivaji */
+@FunctionalInterface
 public interface InputProcessor {
 
   void process();
