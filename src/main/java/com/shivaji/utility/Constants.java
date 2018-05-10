@@ -7,4 +7,6 @@ package com.shivaji.utility;
  */
 public class Constants {
   public static final String NOTHING = "";
+  public static final String DIGIT_START = "(";
+  public static final String DIGIT_END = ")";
 }

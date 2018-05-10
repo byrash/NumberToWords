@@ -46,6 +46,7 @@ class NumberToWordsGeneratorTest {
   @Test
   void test_withDictValuesAndMissingSingleDigitAtLast() {
     assertEquals(4, objUnderTest.go("2255637").size());
-    assertEquals("[BALLME-7, CALLME-7, BALL-ME-7, CALL-ME-7]", objUnderTest.go("2255637").toString());
+    assertEquals(
+        "[BALLME-7, CALLME-7, BALL-ME-7, CALL-ME-7]", objUnderTest.go("2255637").toString());
   }
 }

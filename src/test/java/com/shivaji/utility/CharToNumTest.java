@@ -2,7 +2,6 @@ package com.shivaji.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.shivaji.utility.CharToNum;
 import org.junit.jupiter.api.Test;
 
 /** @author Shivaji */

@@ -6,7 +6,6 @@ import static java.text.MessageFormat.format;
 import com.shivaji.dict.DictionaryFileProcessor;
 import com.shivaji.dict.DictionaryVo;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,8 +21,9 @@ import java.util.stream.Collectors;
 /**
  * For a given number produces all the possible words outcomes
  *
- * This is the main class which utilises NumberToPossibleCombinationsGenerator and PatternNumberToPatternWordsGenerator
- * classes to generate teh final results
+ * <p>This is the main class which utilises NumberToPossibleCombinationsGenerator and
+ * PatternNumberToPatternWordsGenerator classes to generate teh final results
+ *
  * @author Shivaji Byrapaneni
  */
 public class NumberToWordsGenerator {
@@ -84,7 +84,6 @@ public class NumberToWordsGenerator {
 
     possibleNumberMatchesToConsider.forEach(
         patternNum -> {
-          // If repeated number we are saved by eliminating duplicates
           List<String> numsInPatternToReplace =
               Arrays.stream(patternNum.split("\\(.*?\\)")).collect(Collectors.toList());
           Map<String, Optional<Collection<String>>> numToWords =
@@ -117,6 +116,7 @@ public class NumberToWordsGenerator {
               }
               return str.toUpperCase();
             })
+        .map(item -> item.replaceAll("[" + NUM_TO_WORD_SEPERATOR + "]{2,}", NUM_TO_WORD_SEPERATOR))
         .collect(Collectors.toSet());
   }
 
@@ -139,22 +139,5 @@ public class NumberToWordsGenerator {
           }
         });
     return isAllNumbersHaveWords.get();
-  }
-
-  private Collection<String> seperateNonReplacableAdnReplacableNums(String possibleNumber) {
-    final Collection<String> finalCollection = new ArrayList<>();
-    Arrays.stream(possibleNumber.split("\\("))
-        .forEach(
-            str -> {
-              int i = str.indexOf(")");
-              if (i != -1) {
-                String substring = str.substring(0, i);
-                finalCollection.add("(" + substring + ")");
-                finalCollection.add(str.substring(i + 1));
-              } else {
-                finalCollection.add(str); // Direct Number nothing to do
-              }
-            });
-    return finalCollection;
   }
 }

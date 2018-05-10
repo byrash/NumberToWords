@@ -2,7 +2,6 @@ package com.shivaji.word.generator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.shivaji.word.generator.PatternNumberToPatternWordsGenerator;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,6 +85,8 @@ class PatternNumberToPatternWordsGeneratorTest {
             .filter(item -> !isEmpty.apply(item))
             .collect(Collectors.toList());
     PatternNumberToPatternWordsGenerator.go(pattern, nosToReplace, replacements, result);
-    assertEquals("[W1(2)W3(4)W5, W1(2)W3(4)W6, W1(2)W4(4)W6, W2(2)W3(4)W5, W1(2)W4(4)W5, W2(2)W4(4)W6, W2(2)W4(4)W5, W2(2)W3(4)W6]", result.toString());
+    assertEquals(
+        "[W1(2)W3(4)W5, W1(2)W3(4)W6, W1(2)W4(4)W6, W2(2)W3(4)W5, W1(2)W4(4)W5, W2(2)W4(4)W6, W2(2)W4(4)W5, W2(2)W3(4)W6]",
+        result.toString());
   }
 }

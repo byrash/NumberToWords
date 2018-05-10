@@ -1,8 +1,13 @@
 package com.shivaji.word.generator;
 
 import static com.shivaji.utility.CommonUtils.isEmpty;
+import static com.shivaji.utility.CommonUtils.join;
+import static com.shivaji.utility.Constants.DIGIT_END;
+import static com.shivaji.utility.Constants.DIGIT_START;
 import static java.text.MessageFormat.format;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -68,15 +73,40 @@ public class PatternNumberToPatternWordsGenerator {
 
   private static String getPatternAsString(String inputPattern, String numToReplace) {
     String pattern = new String(inputPattern);
-    int lastIndexOf = pattern.lastIndexOf(numToReplace);
-    int closingIndex = pattern.indexOf(lastIndexOf, ')');
-    if (closingIndex == -1) {
-      closingIndex = pattern.length();
+    String[] split = pattern.split("\\(");
+    List<String> patternItems = new ArrayList<>();
+    List<String> collect =
+        Arrays.stream(split)
+            .map(
+                item -> {
+                  if (item.contains(DIGIT_END)) {
+                    return DIGIT_START.concat(item);
+                  }
+                  return item;
+                })
+            .collect(Collectors.toList());
+    collect
+        .stream()
+        .forEach(
+            item -> {
+              int start = item.indexOf(DIGIT_START);
+              int end = item.indexOf(DIGIT_END);
+              if (-1 != start && -1 != end) {
+                patternItems.add(join(item.substring(start, end), DIGIT_END));
+                if (end + 1 < item.length()) {
+                  patternItems.add(item.substring(end + 1));
+                }
+              } else {
+                patternItems.add(item);
+              }
+            });
+
+    for (int i = patternItems.size() - 1; i >= 0; i--) {
+      if (patternItems.get(i).equalsIgnoreCase(numToReplace)) {
+        patternItems.set(i, REPLACE_ME);
+        break;
+      }
     }
-    pattern =
-        pattern.substring(0, lastIndexOf)
-            + REPLACE_ME
-            + pattern.substring(lastIndexOf, closingIndex);
-    return pattern.replaceAll(REPLACE_ME + numToReplace, REPLACE_ME);
+    return patternItems.stream().reduce(String::concat).get();
   }
 }

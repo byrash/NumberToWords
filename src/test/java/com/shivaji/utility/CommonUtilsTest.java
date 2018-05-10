@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.shivaji.utility.CommonUtils;
 import org.junit.jupiter.api.Test;
 
 /** @author Shivaji */
@@ -21,7 +20,6 @@ class CommonUtilsTest {
     assertFalse(CommonUtils.isNotEmpty.apply(null));
     assertFalse(CommonUtils.isNotEmpty.apply(""));
   }
-
 
   @Test
   void isEmpty() {

@@ -2,6 +2,8 @@ package com.shivaji.word.generator;
 
 import static com.shivaji.utility.CommonUtils.isEmpty;
 import static com.shivaji.utility.CommonUtils.join;
+import static com.shivaji.utility.Constants.DIGIT_END;
+import static com.shivaji.utility.Constants.DIGIT_START;
 import static java.text.MessageFormat.format;
 
 import java.util.Collection;
@@ -18,6 +20,7 @@ import java.util.stream.Stream;
  * @author Shivaji Byrapaneni
  */
 public class NumberToPossibleCombinationsGenerator {
+
   private static final Logger LOG =
       Logger.getLogger(NumberToPossibleCombinationsGenerator.class.getName());
 
@@ -42,13 +45,21 @@ public class NumberToPossibleCombinationsGenerator {
    */
   public Collection<String> process(String number) {
     LOG.fine(format("Processing Number [{0}]", number));
+    Stream<String> combinationForCurrentNumber =
+        Stream.of(
+            number,
+            join(DIGIT_START, number, DIGIT_END),
+            join(DIGIT_START, DIGIT_END, number),
+            join(number, DIGIT_START, DIGIT_END));
     if (isEmpty.apply(number) || number.length() == 1) {
       LOG.fine(format("**** Yielding ****"));
-      return Stream.of(number, join("(", number, ")")).collect(Collectors.toSet());
+      return combinationForCurrentNumber.collect(Collectors.toSet());
     }
     Collection<String> results = new HashSet<>();
-    results.add(number);
-    results.add(join(number, "(", number, ")"));
+    combinationForCurrentNumber.forEach(
+        item -> {
+          results.add(item);
+        });
     IntStream.range(1, number.length())
         .forEach(
             index -> {
@@ -60,25 +71,38 @@ public class NumberToPossibleCombinationsGenerator {
               Collection<String> rightNumPossibilities = process(right);
               results.addAll(generateCombinations(leftNumPossibilities, rightNumPossibilities));
             });
-    return clearUnchangeableTwoConsecutiveItems(results);
+    return clearUnchangeableTwoConsecutiveItemsAndUnUsefull(results);
   }
 
-  private Set<String> clearUnchangeableTwoConsecutiveItems(Collection<String> results) {
+  private Set<String> clearUnchangeableTwoConsecutiveItemsAndUnUsefull(Collection<String> results) {
     return results
         .stream()
         .filter(
             item -> {
-              int openingIndex = item.indexOf("(");
-              int closingIndex = item.indexOf(")");
+              int openingIndex = item.indexOf(DIGIT_START);
+              int closingIndex = item.indexOf(DIGIT_END);
               boolean isNumberFieldExists = openingIndex != -1 && closingIndex != -1;
               return !((isNumberFieldExists
                       && item.substring(openingIndex + 1, closingIndex).length() > 1)
-                  || item.contains(")("));
+                  || item.contains(join(DIGIT_END, DIGIT_START)));
+            })
+        .map(
+            item -> {
+              String tmp = item;
+              String EMPTY_DIGIT = join(DIGIT_START, DIGIT_END);
+              if (tmp.startsWith(EMPTY_DIGIT)) {
+                tmp = item.substring(2);
+              }
+              if (tmp.endsWith(EMPTY_DIGIT)) {
+                tmp = tmp.substring(0, tmp.length() - 2);
+              }
+              return tmp;
             })
         .collect(Collectors.toSet());
   }
 
-  private Collection<String> generateCombinations(Collection<String> left, Collection<String> right){
+  private Collection<String> generateCombinations(
+      Collection<String> left, Collection<String> right) {
     Collection<String> combinations = new HashSet<>();
     left.stream()
         .forEach(
