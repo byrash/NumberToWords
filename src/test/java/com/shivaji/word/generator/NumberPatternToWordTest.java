@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class PatternNumberToPatternWordsGeneratorTest {
+class NumberPatternToWordTest {
 
   static final Map<String, Set<String>> replacements = new HashMap<>(3);
   public static final Function<String, Boolean> isEmpty = str -> str == null || str.isEmpty();
@@ -46,7 +46,7 @@ class PatternNumberToPatternWordsGeneratorTest {
         Arrays.stream(pattern.split("\\(.*?\\)"))
             .filter(item -> !isEmpty.apply(item))
             .collect(Collectors.toList());
-    PatternNumberToPatternWordsGenerator.go(pattern, nosToReplace, replacements, result);
+    NumberPatternToWord.generateWordsForNumberPattern(pattern, nosToReplace, replacements, result);
     assertEquals(
         "[(1)W1(3)W3(5)W6, (1)W1(3)W3(5)W5, (1)W1(3)W4(5)W5, (1)W1(3)W4(5)W6, (1)W2(3)W3(5)W5, (1)W2(3)W3(5)W6, (1)W2(3)W4(5)W5, (1)W2(3)W4(5)W6]",
         result.toString());
@@ -60,7 +60,7 @@ class PatternNumberToPatternWordsGeneratorTest {
         Arrays.stream(pattern.split("\\(.*?\\)"))
             .filter(item -> !isEmpty.apply(item))
             .collect(Collectors.toList());
-    PatternNumberToPatternWordsGenerator.go(pattern, nosToReplace, replacements, result);
+    NumberPatternToWord.generateWordsForNumberPattern(pattern, nosToReplace, replacements, result);
     assertEquals("[]", result.toString());
   }
 
@@ -72,7 +72,7 @@ class PatternNumberToPatternWordsGeneratorTest {
         Arrays.stream(pattern.split("\\(.*?\\)"))
             .filter(item -> !isEmpty.apply(item))
             .collect(Collectors.toList());
-    PatternNumberToPatternWordsGenerator.go(pattern, nosToReplace, replacements, result);
+    NumberPatternToWord.generateWordsForNumberPattern(pattern, nosToReplace, replacements, result);
     assertEquals("[(1)W1(3)W3(5), (1)W1(3)W4(5), (1)W2(3)W3(5), (1)W2(3)W4(5)]", result.toString());
   }
 
@@ -84,7 +84,7 @@ class PatternNumberToPatternWordsGeneratorTest {
         Arrays.stream(pattern.split("\\(.*?\\)"))
             .filter(item -> !isEmpty.apply(item))
             .collect(Collectors.toList());
-    PatternNumberToPatternWordsGenerator.go(pattern, nosToReplace, replacements, result);
+    NumberPatternToWord.generateWordsForNumberPattern(pattern, nosToReplace, replacements, result);
     assertEquals(
         "[W1(2)W3(4)W5, W1(2)W3(4)W6, W1(2)W4(4)W6, W2(2)W3(4)W5, W1(2)W4(4)W5, W2(2)W4(4)W6, W2(2)W4(4)W5, W2(2)W3(4)W6]",
         result.toString());

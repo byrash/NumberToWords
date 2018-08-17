@@ -17,36 +17,38 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Replaces pattern numbers eligible to be replaced with the assocaited patterns of words using
+ * Replaces pattern numbers eligible to be replaced with the associated patterns of words using
  * tailed recursion and produces the result for each number pattern
  *
  * @author Shivaji Byrapaneni
  */
-public class PatternNumberToPatternWordsGenerator {
+public class NumberPatternToWord {
 
-  private static final Logger LOG =
-      Logger.getLogger(PatternNumberToPatternWordsGenerator.class.getName());
+  private NumberPatternToWord() {}
+
+  private static final Logger LOG = Logger.getLogger(NumberPatternToWord.class.getName());
   public static final String REPLACE_ME = "REPLACE-ME";
 
-  public static void go(
+  public static void generateWordsForNumberPattern(
       final String pattern,
       final List<String> numsToReplace,
       final Map<String, Set<String>> replacements,
       final Collection<String> result) {
     LOG.fine(format("Generating Pattern Number to Pattern Words for [{0}]", pattern));
-    List<String> _numsToReplace =
+    List<String> tempNumsToReplace =
         numsToReplace.stream().filter(item -> !isEmpty.apply(item)).collect(Collectors.toList());
-    String replacingNum = _numsToReplace.get(0);
+    String replacingNum = tempNumsToReplace.get(0);
     Set<String> replacementForNumber = replacements.get(replacingNum);
-    if (_numsToReplace.size() > 1) {
-      go(pattern, _numsToReplace.subList(1, _numsToReplace.size()), replacements, result);
+    if (tempNumsToReplace.size() > 1) {
+      generateWordsForNumberPattern(
+          pattern, tempNumsToReplace.subList(1, tempNumsToReplace.size()), replacements, result);
     }
     generateWords(pattern, replacingNum, replacementForNumber, result);
   }
 
   private static void generateWords(
       final String pattern, String currentNum, Set<String> words, Collection<String> result) {
-    Collection<String> curentResult = new HashSet<>();
+    Collection<String> currentResult = new HashSet<>();
     if (words == null || words.isEmpty()) {
       return;
     }
@@ -57,18 +59,17 @@ public class PatternNumberToPatternWordsGenerator {
               result
                   .stream()
                   .forEach(
-                      currentPattern -> {
-                        curentResult.add(
-                            getPatternAsString(currentPattern, currentNum)
-                                .replaceAll(REPLACE_ME, word));
-                      });
+                      currentPattern ->
+                          currentResult.add(
+                              getPatternAsString(currentPattern, currentNum)
+                                  .replaceAll(REPLACE_ME, word)));
               if (result.isEmpty()) { // Root case where no results will exists
-                curentResult.add(
+                currentResult.add(
                     getPatternAsString(pattern, currentNum).replaceAll(REPLACE_ME, word));
               }
             });
     result.clear();
-    result.addAll(curentResult);
+    result.addAll(currentResult);
   }
 
   private static String getPatternAsString(String inputPattern, String numToReplace) {

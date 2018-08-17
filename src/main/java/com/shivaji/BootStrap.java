@@ -1,11 +1,10 @@
 package com.shivaji;
 
-import com.shivaji.commandline.processor.CommandLineArgsParser;
-import com.shivaji.input.processor.CommandLineInputProcessor;
-import com.shivaji.input.processor.FileInputProcessor;
-import com.shivaji.input.processor.InputProcessor;
-import com.shivaji.word.generator.NumberToWordsGenerator;
-import java.util.logging.Logger;
+import com.shivaji.commandline.processor.CommandLineArg;
+import com.shivaji.input.processor.CommandLineInput;
+import com.shivaji.input.processor.FileInput;
+import com.shivaji.input.processor.Input;
+import com.shivaji.word.generator.NumberToWord;
 
 /**
  * Main Program that boot straps the system.
@@ -13,29 +12,22 @@ import java.util.logging.Logger;
  * @author Shivaji Byrapaneni
  */
 public class BootStrap {
-  private static final Logger LOG = Logger.getLogger(BootStrap.class.getName());
 
   public static void main(String[] args) {
     // Init all objects required
-    CommandLineArgsParser commandLineArgsParser = new CommandLineArgsParser(args);
-    NumberToWordsGenerator numberToWordsGenerator =
-        new NumberToWordsGenerator(commandLineArgsParser.getDictionary().get());
-    InputProcessor commandLineInputProcessor =
-        new CommandLineInputProcessor(numberToWordsGenerator);
-    InputProcessor fileInputProcessor =
-        new FileInputProcessor(commandLineArgsParser, numberToWordsGenerator);
+    try (CommandLineArg commandLineArg = new CommandLineArg(args)) {
 
-    if (!commandLineArgsParser.getDictionary().isPresent()) {
-      LOG.severe("System Cannot operate without dictionary file");
-      System.exit(1);
+      NumberToWord numberToWord = new NumberToWord(commandLineArg.getDictionary());
+      Input commandLineInput = new CommandLineInput(numberToWord);
+      Input fileInput = new FileInput(commandLineArg, numberToWord);
+
+      if (commandLineArg.getInputNumFiles().isEmpty()) {
+        // Command line
+        commandLineInput.generateWords();
+      } else {
+        // Input Files
+        fileInput.generateWords();
+      }
     }
-    if (commandLineArgsParser.getNumberFiles().isEmpty()) {
-      // Command line
-      commandLineInputProcessor.process();
-    } else {
-      // Input Files
-      fileInputProcessor.process();
-    }
-    commandLineArgsParser.cleanUp();
   }
 }

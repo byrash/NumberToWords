@@ -19,10 +19,9 @@ import java.util.stream.Stream;
  *
  * @author Shivaji Byrapaneni
  */
-public class NumberToPossibleCombinationsGenerator {
+public class NumberToPattern {
 
-  private static final Logger LOG =
-      Logger.getLogger(NumberToPossibleCombinationsGenerator.class.getName());
+  private static final Logger LOG = Logger.getLogger(NumberToPattern.class.getName());
 
   /**
    * Gets all the possible combinations for a given number matching the requirement that if no match
@@ -32,18 +31,18 @@ public class NumberToPossibleCombinationsGenerator {
    *
    * <p>Algorithm uses recursion, this function choose a pivot starting from position 1 of the given
    * number and splits the number to left and right of pivot ( pivot included in right ) and calls
-   * the same function recursively with left and then right. This process contineous until recursive
-   * function yields values, where the values include the number itself which is a single digit and
-   * the same number as string string { I'm differentiating non considerable number placing it with
-   * in brackets '()' }. Then the results in each recursion process are cartisian joined with the
-   * counter part i.e. left to right. This process contineous until and final result is made and
-   * final result removes all the non replacable numbers with more than one characters as
-   * requirements states no consecutive numbers should not be remain changed.
+   * the same function recursively with left and then right. This generateWords contineous until
+   * recursive function yields values, where the values include the number itself which is a single
+   * digit and the same number as string string { I'm differentiating non considerable number
+   * placing it with in brackets '()' }. Then the results in each recursion generateWords are
+   * cartisian joined with the counter part i.e. left to right. This generateWords contineous until
+   * and final result is made and final result removes all the non replacable numbers with more than
+   * one characters as requirements states no consecutive numbers should not be remain changed.
    *
    * @param number
    * @return
    */
-  public Collection<String> process(String number) {
+  public Collection<String> generatePossiblePatterns(String number) {
     LOG.fine(format("Processing Number [{0}]", number));
     Stream<String> combinationForCurrentNumber =
         Stream.of(
@@ -56,25 +55,22 @@ public class NumberToPossibleCombinationsGenerator {
       return combinationForCurrentNumber.collect(Collectors.toSet());
     }
     Collection<String> results = new HashSet<>();
-    combinationForCurrentNumber.forEach(
-        item -> {
-          results.add(item);
-        });
+    combinationForCurrentNumber.forEach(results::add);
     IntStream.range(1, number.length())
         .forEach(
             index -> {
               String left = number.substring(0, index);
               LOG.fine(format("Left [{0}]", left));
-              Collection<String> leftNumPossibilities = process(left);
+              Collection<String> leftNumPossibilities = generatePossiblePatterns(left);
               String right = number.substring(index);
               LOG.fine(format("Right [{0}]", right));
-              Collection<String> rightNumPossibilities = process(right);
+              Collection<String> rightNumPossibilities = generatePossiblePatterns(right);
               results.addAll(generateCombinations(leftNumPossibilities, rightNumPossibilities));
             });
-    return clearUnchangeableTwoConsecutiveItemsAndUnUsefull(results);
+    return clearUnchangeableTwoConsecutiveItemsAndUnUseful(results);
   }
 
-  private Set<String> clearUnchangeableTwoConsecutiveItemsAndUnUsefull(Collection<String> results) {
+  private Set<String> clearUnchangeableTwoConsecutiveItemsAndUnUseful(Collection<String> results) {
     return results
         .stream()
         .filter(
@@ -89,11 +85,11 @@ public class NumberToPossibleCombinationsGenerator {
         .map(
             item -> {
               String tmp = item;
-              String EMPTY_DIGIT = join(DIGIT_START, DIGIT_END);
-              if (tmp.startsWith(EMPTY_DIGIT)) {
+              String emptyDigit = join(DIGIT_START, DIGIT_END);
+              if (tmp.startsWith(emptyDigit)) {
                 tmp = item.substring(2);
               }
-              if (tmp.endsWith(EMPTY_DIGIT)) {
+              if (tmp.endsWith(emptyDigit)) {
                 tmp = tmp.substring(0, tmp.length() - 2);
               }
               return tmp;
@@ -106,14 +102,8 @@ public class NumberToPossibleCombinationsGenerator {
     Collection<String> combinations = new HashSet<>();
     left.stream()
         .forEach(
-            leftStr -> {
-              right
-                  .stream()
-                  .forEach(
-                      rightStr -> {
-                        combinations.add(join(leftStr, rightStr));
-                      });
-            });
+            leftStr ->
+                right.stream().forEach(rightStr -> combinations.add(join(leftStr, rightStr))));
     return combinations;
   }
 }

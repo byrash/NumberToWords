@@ -1,10 +1,10 @@
 package com.shivaji.dict;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Data holder of processed dict
@@ -33,8 +33,8 @@ public class DictionaryVo {
     this.numberToWords.get(number).add(word);
   }
 
-  public Optional<Collection<String>> getMatchedWords(String number) {
+  public Collection<String> getMatchedWords(String number) {
     Collection<String> value = this.numberToWords.get(number);
-    return null != value ? Optional.of(value) : Optional.empty();
+    return null != value ? value : Collections.emptySet();
   }
 }

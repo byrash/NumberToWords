@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -27,16 +25,17 @@ import java.util.stream.Collectors;
  *
  * @author Shivaji Byrapaneni
  */
-public class CommandLineArgsParser {
+public class CommandLineArg implements AutoCloseable {
 
-  private static final Logger LOG = Logger.getLogger(CommandLineArgsParser.class.getName());
+  private static final Logger LOG = Logger.getLogger(CommandLineArg.class.getName());
   public static final String DICT_CMD_ARG_INDICATOR = "-d";
   private FileSystem fs = null;
 
-  private final Optional<Path> dictionary;
-  private final Collection<Path> numberFiles;
+  // If not supplied we fallback on default; So, always will have value
+  private final Path dictionary;
+  private final Collection<Path> inputNumFiles;
 
-  public CommandLineArgsParser(String[] args) {
+  public CommandLineArg(String[] args) {
     List<String> argsList = Arrays.stream(args).collect(Collectors.toList());
     if (args.length > 0) {
       dictionary = getDictionary(argsList);
@@ -45,10 +44,10 @@ public class CommandLineArgsParser {
               .stream()
               .filter(arg -> !arg.startsWith(DICT_CMD_ARG_INDICATOR))
               .collect(Collectors.toList());
-      numberFiles = getNumberFiles(argsList);
+      inputNumFiles = getNumberFiles(argsList);
     } else {
       dictionary = getDictionary(argsList);
-      numberFiles = new ArrayList<>();
+      inputNumFiles = new ArrayList<>();
     }
   }
 
@@ -59,7 +58,7 @@ public class CommandLineArgsParser {
         .forEach(
             arg -> {
               Path file = Paths.get(arg);
-              if (Files.isRegularFile(file)) {
+              if (file.toFile().exists()) {
                 files.add(file);
               } else {
                 LOG.warning(format("Ignoring inout file [{0}] as its not valid", arg));
@@ -68,7 +67,7 @@ public class CommandLineArgsParser {
     return files;
   }
 
-  private Optional<Path> getDictionary(List<String> argsList) {
+  private Path getDictionary(List<String> argsList) {
     List<String> dictArg =
         argsList
             .stream()
@@ -77,22 +76,19 @@ public class CommandLineArgsParser {
     if (!dictArg.isEmpty() && dictArg.size() == 1) { // Only one dict accepted
       String dictPath = dictArg.get(0).replace(DICT_CMD_ARG_INDICATOR, NOTHING);
       Path dict = Paths.get(dictPath);
-      if (Files.isRegularFile(dict)) {
-        return Optional.of(dict);
+      if (dict.toFile().exists()) {
+        return dict;
       }
       LOG.warning(format("DictionaryVo file path supplied [{0}] is invalid", dictPath));
     }
     LOG.info("Falling back to system default dictionary");
     try {
-      URL url = CommandLineArgsParser.class.getResource("/dictionary.txt");
-      return Optional.of(getDictFilePath(url));
+      URL url = CommandLineArg.class.getResource("/dictionary.txt");
+      return getDictFilePath(url);
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.warning(
-          format(
-              "Catastrophic system exception. Unable to load default dict [{0}]", e.getMessage()));
+      throw new IllegalStateException(
+          "Catastrophic system exception. Unable to load default dict ", e);
     }
-    return Optional.empty();
   }
 
   public Path getDictFilePath(URL url) throws IOException, URISyntaxException {
@@ -100,14 +96,22 @@ public class CommandLineArgsParser {
       final Map<String, String> env = new HashMap<>();
       final String[] array = url.toString().split("!");
       fs = FileSystems.newFileSystem(URI.create(array[0]), env);
-      final Path path = fs.getPath(array[1]);
-      return path;
+      return fs.getPath(array[1]);
     } else {
       return Paths.get(url.toURI());
     }
   }
 
-  public void cleanUp() {
+  public Path getDictionary() {
+    return dictionary;
+  }
+
+  public Collection<Path> getInputNumFiles() {
+    return inputNumFiles;
+  }
+
+  @Override
+  public void close() {
     if (null != fs) {
       try {
         fs.close();
@@ -115,13 +119,5 @@ public class CommandLineArgsParser {
         LOG.severe(format("Unable to close file system [{0}]", e.getMessage()));
       }
     }
-  }
-
-  public Optional<Path> getDictionary() {
-    return dictionary;
-  }
-
-  public Collection<Path> getNumberFiles() {
-    return numberFiles;
   }
 }

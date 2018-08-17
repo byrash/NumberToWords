@@ -2,31 +2,32 @@ package com.shivaji.dict;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** @author Shivaji */
-class DictionaryFileProcessorTest {
+class DictionaryFileTest {
 
   @Test
   void go_WithNoPath() {
-    assertEquals(Optional.empty(), DictionaryFileProcessor.process(null));
+    assertThrows(
+        IllegalStateException.class,
+        () -> {
+          DictionaryFile.load(null);
+        });
   }
 
   @Test
   void go_WithDictPath() throws URISyntaxException {
-    Path dictPath =
-        Paths.get(DictionaryFileProcessorTest.class.getResource("/test-dictionary.txt").toURI());
-    Optional<DictionaryVo> go = DictionaryFileProcessor.process(dictPath);
-    assertTrue(go.isPresent());
-    Map<String, Collection<String>> numberToWords = go.get().getNumberToWords();
+    Path dictPath = Paths.get(DictionaryFileTest.class.getResource("/test-dictionary.txt").toURI());
+    DictionaryVo dict = DictionaryFile.load(dictPath);
+    Map<String, Collection<String>> numberToWords = dict.getNumberToWords();
     assertNotNull(numberToWords);
     assertEquals(3, numberToWords.size());
     assertNotNull(numberToWords.get("225563"));

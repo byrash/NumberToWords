@@ -4,13 +4,12 @@ import static com.shivaji.utility.CommonUtils.isNotEmpty;
 import static com.shivaji.utility.Constants.NOTHING;
 import static java.text.MessageFormat.format;
 
-import com.shivaji.commandline.processor.CommandLineArgsParser;
+import com.shivaji.commandline.processor.CommandLineArg;
 import com.shivaji.utility.CharToNum;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -19,9 +18,11 @@ import java.util.stream.IntStream;
  *
  * @author Shivaji Byrapaneni
  */
-public class DictionaryFileProcessor {
+public class DictionaryFile {
 
-  private static final Logger LOG = Logger.getLogger(CommandLineArgsParser.class.getName());
+  private DictionaryFile() {}
+
+  private static final Logger LOG = Logger.getLogger(CommandLineArg.class.getName());
   public static final String NON_ALPHABETS_REGEX = "[^a-zA-Z]";
 
   /**
@@ -30,9 +31,9 @@ public class DictionaryFileProcessor {
    *
    * @return
    */
-  public static Optional<DictionaryVo> process(Path dictPath) {
+  public static DictionaryVo load(Path dictPath) {
     if (null == dictPath) {
-      return Optional.empty();
+      throw new IllegalStateException("System cannot operate without dictionary");
     }
     DictionaryVo dictionaryVo = new DictionaryVo();
     try (BufferedReader reader = Files.newBufferedReader(dictPath)) {
@@ -49,10 +50,9 @@ public class DictionaryFileProcessor {
                 final char[] chars = cleanedLine.toCharArray();
                 IntStream.range(0, chars.length)
                     .forEach(
-                        i -> {
-                          // Cant expect to receive 0 here
-                          number.append(CharToNum.getNumFromChar(chars[i]));
-                        });
+                        i ->
+                            // Cant expect to receive 0 here
+                            number.append(CharToNum.getNumFromChar(chars[i])));
                 String finalNum = number.toString();
                 LOG.fine(format("Mapped number for line [{0}] is [{1}]", line, finalNum));
                 // Check if the number is already existing in the dict if yes add teh word ( un
@@ -64,9 +64,9 @@ public class DictionaryFileProcessor {
                 }
               });
     } catch (IOException e) {
-      LOG.warning(format("Unable to process a dict file due to [{0}]", e.getMessage()));
-      return Optional.empty();
+      throw new IllegalStateException(
+          format("Unable to load dictionary file a dict file due to [{0}]", e.getMessage()), e);
     }
-    return Optional.of(dictionaryVo);
+    return dictionaryVo;
   }
 }
