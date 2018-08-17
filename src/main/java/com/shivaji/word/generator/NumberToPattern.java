@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @author Shivaji Byrapaneni
  */
-public class NumberToPattern {
+class NumberToPattern {
 
   private static final Logger LOG = Logger.getLogger(NumberToPattern.class.getName());
 
@@ -31,18 +31,19 @@ public class NumberToPattern {
    *
    * <p>Algorithm uses recursion, this function choose a pivot starting from position 1 of the given
    * number and splits the number to left and right of pivot ( pivot included in right ) and calls
-   * the same function recursively with left and then right. This generateWords contineous until
-   * recursive function yields values, where the values include the number itself which is a single
-   * digit and the same number as string string { I'm differentiating non considerable number
-   * placing it with in brackets '()' }. Then the results in each recursion generateWords are
-   * cartisian joined with the counter part i.e. left to right. This generateWords contineous until
-   * and final result is made and final result removes all the non replacable numbers with more than
-   * one characters as requirements states no consecutive numbers should not be remain changed.
+   * the same function recursively with left and then right. This generateWordsAndPrint contineous
+   * until recursive function yields values, where the values include the number itself which is a
+   * single digit and the same number as string string { I'm differentiating non considerable number
+   * placing it with in brackets '()' }. Then the results in each recursion generateWordsAndPrint
+   * are cartisian joined with the counter part i.e. left to right. This generateWordsAndPrint
+   * contineous until and final result is made and final result removes all the non replacable
+   * numbers with more than one characters as requirements states no consecutive numbers should not
+   * be remain changed.
    *
-   * @param number
+   * @param number number for which to generate pattern
    * @return
    */
-  public Collection<String> generatePossiblePatterns(String number) {
+  Collection<String> generatePossiblePatterns(String number) {
     LOG.fine(format("Processing Number [{0}]", number));
     Stream<String> combinationForCurrentNumber =
         Stream.of(
@@ -51,7 +52,7 @@ public class NumberToPattern {
             join(DIGIT_START, DIGIT_END, number),
             join(number, DIGIT_START, DIGIT_END));
     if (isEmpty.apply(number) || number.length() == 1) {
-      LOG.fine(format("**** Yielding ****"));
+      LOG.fine("**** Yielding ****");
       return combinationForCurrentNumber.collect(Collectors.toSet());
     }
     Collection<String> results = new HashSet<>();
@@ -100,10 +101,7 @@ public class NumberToPattern {
   private Collection<String> generateCombinations(
       Collection<String> left, Collection<String> right) {
     Collection<String> combinations = new HashSet<>();
-    left.stream()
-        .forEach(
-            leftStr ->
-                right.stream().forEach(rightStr -> combinations.add(join(leftStr, rightStr))));
+    left.forEach(leftStr -> right.forEach(rightStr -> combinations.add(join(leftStr, rightStr))));
     return combinations;
   }
 }

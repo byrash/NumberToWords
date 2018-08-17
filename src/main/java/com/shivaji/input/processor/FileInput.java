@@ -3,6 +3,7 @@ package com.shivaji.input.processor;
 import static java.text.MessageFormat.format;
 
 import com.shivaji.commandline.processor.CommandLineArg;
+import com.shivaji.output.processor.Output;
 import com.shivaji.word.generator.NumberToWord;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,18 +27,23 @@ public class FileInput extends Input {
     this.numberToWord = numberToWord;
   }
 
-  public void generateWords() {
-    commandLineArg.getInputNumFiles().forEach(this::generateWordsForInputFile);
+  public void generateWordsAndPrint(Output outputPrinter) {
+    commandLineArg
+        .getInputNumFiles()
+        .forEach(inputFile -> generateWordsForInputFile(inputFile, outputPrinter));
   }
 
-  private void generateWordsForInputFile(Path filePath) {
+  private void generateWordsForInputFile(Path filePath, Output outputPrinter) {
     try (BufferedReader reader = Files.newBufferedReader(filePath)) {
       reader
           .lines()
-          .forEach(fileInputNumber -> generateWordsAndPrint(numberToWord, fileInputNumber));
+          .forEach(
+              fileInputNumber ->
+                  generateWordsAndPrint(numberToWord, fileInputNumber, outputPrinter));
     } catch (IOException e) {
       LOG.warning(
-          format("Unable to generateWords a file [{0}] due to [{1}]", filePath, e.getMessage()));
+          format("Unable to generateWordsAndPrint a file [{0}] due to [{1}]", filePath,
+              e.getMessage()));
       // Let system continue with next file
     }
   }

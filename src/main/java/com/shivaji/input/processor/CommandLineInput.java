@@ -2,6 +2,7 @@ package com.shivaji.input.processor;
 
 import static java.text.MessageFormat.format;
 
+import com.shivaji.output.processor.Output;
 import com.shivaji.word.generator.NumberToWord;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -20,17 +21,17 @@ public class CommandLineInput extends Input {
     this.numberToWord = numberToWord;
   }
 
-  public void generateWords() {
+  public void generateWordsAndPrint(Output outputPrinter) {
     LOG.info("<!---------------------------------------------!>");
     LOG.info("Use exit and hit enter to exit the program");
     LOG.info("<!---------------------------------------------!>");
     Scanner scan = new Scanner(System.in);
     String inputNum = null;
-    while (!isExit(inputNum)) {
+    while (isNotBlank(inputNum) && isNotExit(inputNum)) {
       try {
         inputNum = scan.nextLine();
-        if (!isExit(inputNum)) {
-          generateWordsAndPrint(numberToWord, inputNum);
+        if (isNotExit(inputNum)) {
+          generateWordsAndPrint(numberToWord, inputNum, outputPrinter);
         }
       } catch (Exception e) {
         LOG.severe(format("Command line Failed with [{0}]", e.getMessage()));
@@ -39,7 +40,11 @@ public class CommandLineInput extends Input {
     }
   }
 
-  private static boolean isExit(String input) {
-    return input != null && !input.isEmpty() && input.equalsIgnoreCase("exit");
+  private static boolean isNotBlank(String input) {
+    return input != null && !input.isEmpty();
+  }
+
+  private static boolean isNotExit(String input) {
+    return !input.equalsIgnoreCase("exit");
   }
 }

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -22,14 +23,14 @@ import java.util.stream.Collectors;
  *
  * @author Shivaji Byrapaneni
  */
-public class NumberPatternToWord {
+class NumberPatternToWord {
 
   private NumberPatternToWord() {}
 
   private static final Logger LOG = Logger.getLogger(NumberPatternToWord.class.getName());
-  public static final String REPLACE_ME = "REPLACE-ME";
+  private static final String REPLACE_ME = "REPLACE-ME";
 
-  public static void generateWordsForNumberPattern(
+  static void generateWordsForNumberPattern(
       final String pattern,
       final List<String> numsToReplace,
       final Map<String, Set<String>> replacements,
@@ -52,29 +53,22 @@ public class NumberPatternToWord {
     if (words == null || words.isEmpty()) {
       return;
     }
-    words
-        .stream()
-        .forEach(
-            word -> {
-              result
-                  .stream()
-                  .forEach(
-                      currentPattern ->
-                          currentResult.add(
-                              getPatternAsString(currentPattern, currentNum)
-                                  .replaceAll(REPLACE_ME, word)));
-              if (result.isEmpty()) { // Root case where no results will exists
-                currentResult.add(
-                    getPatternAsString(pattern, currentNum).replaceAll(REPLACE_ME, word));
-              }
-            });
+    words.forEach(
+        word -> {
+          result.forEach(
+              currentPattern ->
+                  currentResult.add(
+                      getPatternAsString(currentPattern, currentNum).replaceAll(REPLACE_ME, word)));
+          if (result.isEmpty()) { // Root case where no results will exists
+            currentResult.add(getPatternAsString(pattern, currentNum).replaceAll(REPLACE_ME, word));
+          }
+        });
     result.clear();
     result.addAll(currentResult);
   }
 
   private static String getPatternAsString(String inputPattern, String numToReplace) {
-    String pattern = new String(inputPattern);
-    String[] split = pattern.split("\\(");
+    String[] split = inputPattern.split("\\(");
     List<String> patternItems = new ArrayList<>();
     List<String> collect =
         Arrays.stream(split)
@@ -86,21 +80,19 @@ public class NumberPatternToWord {
                   return item;
                 })
             .collect(Collectors.toList());
-    collect
-        .stream()
-        .forEach(
-            item -> {
-              int start = item.indexOf(DIGIT_START);
-              int end = item.indexOf(DIGIT_END);
-              if (-1 != start && -1 != end) {
-                patternItems.add(join(item.substring(start, end), DIGIT_END));
-                if (end + 1 < item.length()) {
-                  patternItems.add(item.substring(end + 1));
-                }
-              } else {
-                patternItems.add(item);
-              }
-            });
+    collect.forEach(
+        item -> {
+          int start = item.indexOf(DIGIT_START);
+          int end = item.indexOf(DIGIT_END);
+          if (-1 != start && -1 != end) {
+            patternItems.add(join(item.substring(start, end), DIGIT_END));
+            if (end + 1 < item.length()) {
+              patternItems.add(item.substring(end + 1));
+            }
+          } else {
+            patternItems.add(item);
+          }
+        });
 
     for (int i = patternItems.size() - 1; i >= 0; i--) {
       if (patternItems.get(i).equalsIgnoreCase(numToReplace)) {
@@ -108,6 +100,7 @@ public class NumberPatternToWord {
         break;
       }
     }
-    return patternItems.stream().reduce(String::concat).get();
+    Optional<String> s = patternItems.stream().reduce(String::concat);
+    return s.orElse("");
   }
 }

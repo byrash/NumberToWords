@@ -1,21 +1,23 @@
 package com.shivaji.input.processor;
 
+import com.shivaji.output.processor.Output;
 import com.shivaji.word.generator.NumberToWord;
 import java.util.Collection;
 
 /** @author Shivaji */
 public abstract class Input {
 
-  public abstract void generateWords();
+  public abstract void generateWordsAndPrint(Output outputPrinter);
 
   /** Prints the outcome of finding possible words for a given number */
-  protected void generateWordsAndPrint(NumberToWord numberToWord, String number) {
+  protected void generateWordsAndPrint(
+      NumberToWord numberToWord, String number, Output outputPrinter) {
     Collection<String> results = numberToWord.generateWords(number);
     if (!results.isEmpty()) {
-      System.out.println("Possible words for Number --> " + number);
-      results.stream().forEach(System.out::println);
+      outputPrinter.println("Possible words for Number --> " + number);
+      results.forEach(outputPrinter::println);
     } else {
-      System.out.println("No Possible words found for Number --> " + number);
+      outputPrinter.println("No Possible words found for Number --> " + number);
     }
   }
 }

@@ -86,9 +86,9 @@ public class NumberToWord {
           List<String> numsInPatternToReplace =
               stream(patternNum.split("\\(.*?\\)")).collect(Collectors.toList());
           Map<String, Collection<String>> numToWords =
-              getDictWordsForNumber(numsInPatternToReplace.stream().collect(toSet()));
-          // If any number is not replacable then do not generateWords
-          // i.e. Only generateWords the number if all words exists
+              getDictWordsForNumber(new HashSet<>(numsInPatternToReplace));
+          // If any number is not replacable then do not generateWordsAndPrint
+          // i.e. Only generateWordsAndPrint the number if all words exists
           if (isAllNumbersHaveWords(numToWords)) {
             final Map<String, Set<String>> wordsToReplace = new HashMap<>();
             numToWords.forEach(

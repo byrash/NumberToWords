@@ -4,6 +4,7 @@ import com.shivaji.commandline.processor.CommandLineArg;
 import com.shivaji.input.processor.CommandLineInput;
 import com.shivaji.input.processor.FileInput;
 import com.shivaji.input.processor.Input;
+import com.shivaji.output.processor.ConsoleStdOutImpl;
 import com.shivaji.word.generator.NumberToWord;
 
 /**
@@ -17,17 +18,27 @@ public class BootStrap {
     // Init all objects required
     try (CommandLineArg commandLineArg = new CommandLineArg(args)) {
 
+      // Main class that does the number to word generation
       NumberToWord numberToWord = new NumberToWord(commandLineArg.getDictionary());
-      Input commandLineInput = new CommandLineInput(numberToWord);
-      Input fileInput = new FileInput(commandLineArg, numberToWord);
 
       if (commandLineArg.getInputNumFiles().isEmpty()) {
         // Command line
-        commandLineInput.generateWords();
+        handleCmdLineInputNumToWords(numberToWord);
       } else {
         // Input Files
-        fileInput.generateWords();
+        handleFileInputNumToWords(commandLineArg, numberToWord);
       }
     }
+  }
+
+  private static void handleFileInputNumToWords(
+      CommandLineArg commandLineArg, NumberToWord numberToWord) {
+    Input fileInput = new FileInput(commandLineArg, numberToWord);
+    fileInput.generateWordsAndPrint(new ConsoleStdOutImpl());
+  }
+
+  private static void handleCmdLineInputNumToWords(NumberToWord numberToWord) {
+    Input commandLineInput = new CommandLineInput(numberToWord);
+    commandLineInput.generateWordsAndPrint(new ConsoleStdOutImpl());
   }
 }
